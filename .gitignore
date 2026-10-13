@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project Oasis generated output
+oasis_results.png
+oasis_*.png
+*_series.csv
+*_summary.json

@@ -1,0 +1,17 @@
+{
+  "name": "plaza",
+  "description": "A shaded plaza: three canopies in a row, misters under the middle one, cool pavement on the sunny approach.",
+  "parameters": {
+    "n": 40,
+    "dx": 2.0,
+    "dt": 30.0,
+    "duration_hours": 24.0
+  },
+  "components": [
+    {"kind": "canopy", "x_m": 25, "y_m": 41, "radius_m": 9, "strength": 0.8},
+    {"kind": "canopy", "x_m": 41, "y_m": 41, "radius_m": 9, "strength": 0.85},
+    {"kind": "canopy", "x_m": 57, "y_m": 41, "radius_m": 9, "strength": 0.8},
+    {"kind": "mister", "x_m": 41, "y_m": 41, "radius_m": 7, "strength": 1.2},
+    {"kind": "reflective_pavement", "x_m": 41, "y_m": 17, "radius_m": 12, "strength": 0.6}
+  ]
+}
