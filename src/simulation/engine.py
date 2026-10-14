@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any, List, Optional, Sequence
 
-from .config import Parameters
+from config import Parameters
 from .state import SimulationState
+from data.history import Record
 
 # TODO: replace with the real Component type once components/ exists.
 Component = Any
@@ -17,6 +18,7 @@ class Simulation:
     ):
         self.params = params or Parameters()
         self.components = list(components or [])
+        self.record = Record()
         self.state = SimulationState.initial(self.params)
 
     @property
@@ -37,8 +39,9 @@ class Simulation:
         """
         pass
 
-    def run(self) -> SimulationState:
+    def run(self) -> Record:
         """Integrate the full duration and return the final state."""
         for i in range(self.steps):
             self.step(self.hour_at(i))
-        return self.state # TODO Return Historical data
+            self.record.save(self.state, self.hour_at(i))
+        return self.record
