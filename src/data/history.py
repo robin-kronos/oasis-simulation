@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import TYPE_CHECKING, List
 import numpy as np
-from simulation.state import SimulationState
+
+if TYPE_CHECKING:  # avoids a cycle: simulation.engine imports this module
+    from simulation.state import SimulationState
 
 @dataclass
 class Snapshot:
@@ -27,7 +29,7 @@ class Record:
 
     def save(
             self, 
-            state: SimulationState,
+            state: "SimulationState",
             hour: float
         ) -> None:
             # rh = state.relative_humidity()
@@ -47,6 +49,12 @@ class Record:
 
 
     #TODO relative humidity 
+    def snapshot_nearest(self, hour: float) -> Snapshot:
+        """The recorded snapshot closest to the requested hour."""
+        if not self.snapshots:
+            raise ValueError("no snapshots were recorded")
+        return min(self.snapshots, key=lambda s: abs(s.hour - hour))
+
     def __str__(self) -> str:
         """Human-readable summary of everything recorded so far."""
         if not self.hour:
