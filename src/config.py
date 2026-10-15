@@ -3,7 +3,19 @@ from dataclasses import dataclass
 
 @dataclass
 class Parameters:
+    # Atmospheric ventilation
+    ventilation_tau = 1800.0  # 30 minutes
 
+    # Example background humidity ratio
+    background_w = 0.012  # kg/kg dry air
+
+    # Time settings (seconds)
+
+    diffusion_dt = 2.0
+    output_dt = 3600.0
+
+    # Spatial settings
+    K_air =  0.01
     #type of surface area for map
     Asphalt =0
     Vegetation =1
@@ -13,7 +25,7 @@ class Parameters:
     # Simulation Parameters
     n: int = 40                  # 40 x 40 cells, each 2 m x 2 m => 80 m x 80 m
     dx: float = 2.0              # metres per cell
-    dt: float = 30.0             # seconds; explicit time step
+    dt: float = 60.0             # seconds; explicit time step
     start_time: float =  0.0     # Start Time
     duration_hours: float = 24.0
 

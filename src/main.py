@@ -30,7 +30,16 @@ if __name__ == "__main__":
             # Grass
             city_map.surfacetype[:, j] = p.Vegetation
             city_map.albedo[:, j] = 0.23
+    canopy_size = 10
+    canopy_shade = 1
 
+    city_map.shade_fraction[:canopy_size, :canopy_size] = canopy_shade
+    city_map.add_mister(
+        row= 20,
+        col=20,
+        radius=6,
+        rate=0.0002
+    )
     # Create simulation
     sim = Simulation(
         params=p,
@@ -50,7 +59,7 @@ if __name__ == "__main__":
         show=True,
         create_gif=True,
         gif_path="oasis_runJaspertry.gif",
-        gif_interval=60
+        gif_interval=1
     )
 
     # TODO Plots Data

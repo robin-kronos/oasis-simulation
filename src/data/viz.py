@@ -136,3 +136,5 @@ def make_gif(
     animation.save(save_path, writer=PillowWriter(fps=fps))
     plt.close(fig)
     return save_path
+
+
