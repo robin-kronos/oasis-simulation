@@ -3,6 +3,13 @@ from dataclasses import dataclass
 
 @dataclass
 class Parameters:
+
+    #type of surface area for map
+    Asphalt =0
+    Vegetation =1
+    Wet_Surface =2
+    Roof =3
+
     # Simulation Parameters
     n: int = 40                  # 40 x 40 cells, each 2 m x 2 m => 80 m x 80 m
     dx: float = 2.0              # metres per cell

@@ -11,9 +11,9 @@ from config import Parameters
 class SimulationState:
     # Three n x n grids, taken from parameters that describe near-surface air and surface temperature
     # and humidity ratio per spatial point.
-    ta: np.ndarray
-    ts: np.ndarray
-    w: np.ndarray
+    ta: np.ndarray # air Tempratrue
+    ts: np.ndarray # surface temprature
+    w: np.ndarray  # Humidity
 
     @classmethod
     def initial(cls, params: Parameters) -> "SimulationState":
@@ -35,3 +35,9 @@ class SimulationState:
         return SimulationState(
             ta=self.ta.copy(), ts=self.ts.copy(), w=self.w.copy()
         )
+
+## update the state Using euler
+    def makestep(self, dta, dts, dw,dt):
+        self.ta += dta * dt
+        self.ts += dts * dt
+        self.w += dw * dt
