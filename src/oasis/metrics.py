@@ -41,7 +41,7 @@ class History:
     def record(
         self,
         hour: float,
-        state: "SimulationState",
+        state: SimulationState,
         water_l: float,
         energy_kwh: float,
         snapshot: bool = True,

@@ -4,8 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
-
-from .config import Parameters
+from config import Parameters
 
 
 @dataclass
@@ -25,6 +24,12 @@ class SimulationState:
             ts=ta + 3.0,                              # surface starts warmer
             w=np.full((n, n), 0.008, dtype=float),    # ~22 % RH at 30 C
         )
+
+    # def relative_humidity(self) -> np.ndarray:
+    #     """Relative humidity field (%) implied by the current air state."""
+    #     return rh_from_humidity_ratio(self.ta, self.w)
+
+
 
     def copy(self) -> "SimulationState":
         return SimulationState(

@@ -1,5 +1,5 @@
-from simulation.config import Parameters
-from simulation.engine import Simulation
+from config import Parameters
+from simulation import Simulation
 
 if __name__ == "__main__":
     p = Parameters()
@@ -13,5 +13,9 @@ if __name__ == "__main__":
     # TODO add components parameter
     sim = Simulation(p )
     #TODO return history and data
-    sim.run()
+    record = sim.run()
+
+
+    print(str(record))
+
     # TODO Plots Data
