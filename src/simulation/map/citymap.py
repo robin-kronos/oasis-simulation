@@ -1,55 +1,68 @@
+"""The static map the physics runs over.
+
+Four grids describing what is physically on the ground. They are written once
+at setup, by the components, and never change during a run - which is what
+separates them from the three evolving fields in SimulationState.
+"""
 from dataclasses import dataclass
+
 import numpy as np
 
 
 @dataclass
 class CityMap:
-    surfacetype: np.ndarray
-    albedo: np.ndarray
-    shade_fraction: np.ndarray
-    mist_rate: np.ndarray
-
+    surfacetype: np.ndarray     # surface code per cell: asphalt, vegetation, ...
+    albedo: np.ndarray          # 0-1 reflectance
+    shade_fraction: np.ndarray  # 0-1 fraction of solar intercepted above
+    mist_rate: np.ndarray       # potential evaporation, kg/(m2 s)
 
     def __post_init__(self):
-        if self.surfacetype.shape != self.albedo.shape:
-            raise ValueError(
-                "Surfacetype and albedo must have the same shape"
-            )
+        shape = self.surfacetype.shape
+        for name in ("albedo", "shade_fraction", "mist_rate"):
+            if getattr(self, name).shape != shape:
+                raise ValueError(
+                    "{0} has shape {1}, expected {2}".format(
+                        name, getattr(self, name).shape, shape
+                    )
+                )
 
     @classmethod
-    def initial(cls, params):
+    def initial(cls, params, components=None):
+        """A bare asphalt domain, with any components imprinted on it."""
         n = params.n
-
-        return cls(
-            surfacetype=np.full(
-                (n, n), params.Asphalt, dtype=int
-            ),
-            albedo=np.full(
-                (n, n), 0.12, dtype=float
-            ),
-            shade_fraction=np.full((n,n), 0, dtype=float),
-            mist_rate=np.full((n,n), 0, dtype=float),
+        city_map = cls(
+            surfacetype=np.full((n, n), params.Asphalt, dtype=int),
+            albedo=np.full((n, n), 0.12, dtype=float),
+            shade_fraction=np.zeros((n, n), dtype=float),
+            mist_rate=np.zeros((n, n), dtype=float),
         )
+        city_map.place(components or [], params)
+        return city_map
 
-    def add_mister(self, row, col, radius, rate=0.000002):
+    def place(self, components, params):
+        """Imprint components onto the map, in the order given.
+
+        Later components win where they overwrite - a park laid over paving
+        replaces it - so order is meaningful for surface type and albedo.
         """
-        Add a circular misting area.
+        for component in components:
+            component.validate(params)
+            component.apply(self, params)
+        np.clip(self.shade_fraction, 0.0, 1.0, out=self.shade_fraction)
+        np.clip(self.albedo, 0.0, 1.0, out=self.albedo)
+        return self
 
-        row, col: center position in grid cells
-        radius: radius in grid cells
-        rate: potential evaporation in kg/m²/s
-        """
-
-        rows, cols = np.ogrid[
-            :self.surfacetype.shape[0],
-            :self.surfacetype.shape[1]
-        ]
-
-        distance_squared = (
-                (rows - row) ** 2 +
-                (cols - col) ** 2
-        )
-
-        mask = distance_squared <= radius ** 2
-
-        self.mist_rate[mask] = rate
+    def surface_counts(self, params):
+        """Cell count per surface type, for a run summary."""
+        names = {
+            params.Asphalt: "asphalt",
+            params.Vegetation: "vegetation",
+            params.Wet_Surface: "wet surface",
+            params.Roof: "roof",
+        }
+        counts = {}
+        for code, name in names.items():
+            cells = int((self.surfacetype == code).sum())
+            if cells:
+                counts[name] = cells
+        return counts
